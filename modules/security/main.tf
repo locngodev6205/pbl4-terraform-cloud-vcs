@@ -33,6 +33,39 @@ resource "aws_security_group" "alb" {
   }
 }
 
+resource "aws_security_group" "web" {
+  name        = "${var.project_name}-web-sg"
+  description = "Security group for web EC2 instances"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    description     = "HTTP from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  ingress {
+    description     = "HTTPS from ALB"
+    from_port       = 443
+    to_port         = 443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.project_name}-web-sg"
+  }
+}
+
 resource "aws_security_group" "internal_alb" {
   name        = "${var.project_name}-internal-alb-sg"
   description = "Security group for internal ALB"
@@ -66,38 +99,6 @@ resource "aws_security_group" "internal_alb" {
   }
 }
 
-resource "aws_security_group" "web" {
-  name        = "${var.project_name}-web-sg"
-  description = "Security group for web EC2 instances"
-  vpc_id      = var.vpc_id
-
-  ingress {
-    description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
-  }
-
-  ingress {
-    description     = "HTTPS from ALB"
-    from_port       = 443
-    to_port         = 443
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.project_name}-web-sg"
-  }
-}
 
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-app-sg"
