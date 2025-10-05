@@ -66,10 +66,3 @@ module "asg" {
   # Key pair for EC2 instances (optional)
   key_pair_name = var.key_pair_name
 }
-
-resource "aws_instance" "ansible_server" {
-  ami           = "ami-0ba8071c5fdcaac01"
-  instance_type = "t3.micro"
-}
-
-
